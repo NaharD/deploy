@@ -1,0 +1,21 @@
+{
+    "name": "nahard/deploy",
+    "description": "Модуль дозволяє отримати кращий контроль над розгортанням вашого проекту.",
+    "type": "yii2-extension",
+    "keywords": ["yii2","extension","deploy","deploy  monitoring","deploy module"],
+    "license": "LGPL-3.0+",
+    "authors": [
+        {
+            "name": "NaharD",
+            "email": "nagard11@gmail.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "nahard\\deploy\\": ""
+        }
+    }
+}

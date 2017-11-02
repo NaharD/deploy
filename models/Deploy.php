@@ -145,10 +145,10 @@ class Deploy extends DeployGii
 	public function populateMessage()
 	{
 		$request = Json::decode($this->request_data, false);
-
-		foreach ($request->push->changes[0]->commits as $commit) {
-			$this->message .= Html::a("{$commit->type} - {$commit->message}", $commit->links->html->href) . "<br>";
-		}
+		
+		if (isset($request->push->changes[0]->commits) && is_array($request->push->changes[0]->commits))
+			foreach ($request->push->changes[0]->commits as $commit)
+				$this->message .= Html::a("{$commit->type} - {$commit->message}", $commit->links->html->href) . "<br>";
 	}
 
 	public function getLogFileBuild()

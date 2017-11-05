@@ -5,6 +5,7 @@ namespace nahard\deploy\controllers;
 use Yii;
 use nahard\deploy\models\Deploy;
 use nahard\deploy\models\DeploySearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -26,6 +27,10 @@ class DeployController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+			'access' => [
+				'class' => AccessControl::className(),
+				'rules' => $this->module->accessRules,
+			],
         ];
     }
 
@@ -112,7 +117,6 @@ class DeployController extends Controller
 	public function actionWebhook()
 	{
 		// Перевірка чи це пост запит
-
 		$deployModel = new Deploy();
 
 		$deployModel->request_ip 	= Yii::$app->request->userIP;
@@ -121,11 +125,16 @@ class DeployController extends Controller
 		$deployModel->populateMessage();
 
 		if ($deployModel->save()) {
-			Deploy::runDeploy();
+			Deploy::runDeploy($deployModel);
 			echo 'yes';
 		} else {
 			echo current(current($deployModel->errors));
 		}
+	}
+	
+	public function actionDeploy()
+	{
+		Deploy::runDeploy(true);
 	}
 
 	public function beforeAction($action)

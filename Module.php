@@ -32,6 +32,16 @@ class Module extends \yii\base\Module
 			'allow' => true,
 			'roles' => ['deployDelete'],
 		],
+		[
+			'actions' => ['webhook'],
+			'allow' => true,
+			'roles' => ['deployWebhook'],
+		],
+		[
+			'actions' => ['build'],
+			'allow' => true,
+			'roles' => ['deployBuild'],
+		],
 	];
 	
 	/**

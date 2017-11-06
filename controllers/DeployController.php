@@ -130,7 +130,7 @@ class DeployController extends Controller
 		echo $deployModel->responseOk();
 	}
 	
-	public function deploy()
+	public function actionDeploy()
 	{
 		$deployModel = (new DeployManualForm)->create();
 		$deployModel->runDeploy();

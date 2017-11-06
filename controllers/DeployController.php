@@ -2,6 +2,8 @@
 
 namespace nahard\deploy\controllers;
 
+use nahard\deploy\models\forms\DeployBitbucketForm;
+use nahard\deploy\models\forms\DeployManualForm;
 use Yii;
 use nahard\deploy\models\Deploy;
 use nahard\deploy\models\DeploySearch;
@@ -117,24 +119,22 @@ class DeployController extends Controller
 	public function actionWebhook()
 	{
 		// Перевірка чи це пост запит
-		$deployModel = new Deploy();
-
-		$deployModel->request_ip 	= Yii::$app->request->userIP;
-		$deployModel->request_url 	= Yii::$app->request->absoluteUrl;
-		$deployModel->request_data 	= Yii::$app->request->rawBody;
-		$deployModel->populateMessage();
-
-		if ($deployModel->save()) {
-			Deploy::runDeploy($deployModel);
-			echo 'yes';
-		} else {
-			echo current(current($deployModel->errors));
-		}
+		
+		$deployForm = Deploy::getDeployForm();
+		
+		if (!$deployForm)
+			return $this->goHome();
+		
+		$deployModel = $deployForm->create();
+		$deployModel->runDeploy();
+		echo $deployModel->responseOk();
 	}
 	
-	public function actionDeploy()
+	public function deploy()
 	{
-		Deploy::runDeploy(true);
+		$deployModel = (new DeployManualForm)->create();
+		$deployModel->runDeploy();
+		echo $deployModel->responseOk();
 	}
 
 	public function beforeAction($action)

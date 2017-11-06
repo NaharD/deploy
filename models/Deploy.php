@@ -2,12 +2,13 @@
 
 namespace nahard\deploy\models;
 
+use nahard\deploy\models\forms\DeployManualForm;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\FileHelper;
-use yii\helpers\Html;
 use yii\helpers\Json;
+use yii\validators\IpValidator;
 
 class Deploy extends DeployGii
 {
@@ -15,6 +16,7 @@ class Deploy extends DeployGii
 	const STATUS_EXPECTED 	= 0;
 	const STATUS_COMPLETED 	= 1;
 	const STATUS_REVIEWED 	= 2;
+	const STATUS_ERROR 		= 3;
 	
 	const FILE_NAME_BUILD 				= 'build';
 	const FILE_NAME_GIT 				= 'git';
@@ -30,30 +32,31 @@ class Deploy extends DeployGii
 		];
 	}
 	
-	static function runDeploy($deployModel=null, $force=null)
+	/**
+	 * @param Deploy|null $deployModel
+	 */
+	public function runDeploy()
 	{
-		if (!$force) {
-			if ($deployModel)
-				if (!self::isDeployProcessing())
-					$deployModel->makeProcessing();
-				else
-					return;
-		}
+		if (self::isDeployProcessing())
+			return;
+		
+		$this->makeProcessing();
 		
 		$environment	= self::getConfigEnvServer();
 		$baseDir 		= self::getConfigBasedir();
-		$datetime		= self::formatTimeForLogDir($deployModel->created_by ?? 'now');
+		$datetime		= self::formatTimeForLogDir($this->created_by ?? 'now');
 		$logDir 		= self::buildLogDir($datetime);
-		$buildFile		= Yii::$app->controller->module->buildFile;
+		$buildFile		= self::getBuildFile();
 		
 		if (YII_ENV_DEV) putenv("LD_LIBRARY_PATH=");																// Сраний фікс для ксампа
 		
-		exec("cd '{$baseDir}'; phing -f {$buildFile} -logfile {$logDir}/build.log -D environment={$environment} -D datetime={$datetime} > {$logDir}/scheduler.log 2>{$logDir}/scheduler.error.log", $output, $return_var); // В $output нічого не буде, все потрапляє в логфайл, але помилку по синтаксису в build.xml відстідкувати можка
+		exec("cd '{$baseDir}'; phing -f {$buildFile} -logfile {$logDir}/build.log -D environment={$environment} -D datetime={$datetime} > {$logDir}/scheduler.log 2>{$logDir}/scheduler.error.log", $output, $return_var); // В $output нічого не буде, бо все потрапляє в логфайл, але помилку по синтаксису в build.xml відстідкувати можка
 		
 		if ($return_var === 0)																							// Якщо все файно, буде повернуто значення 0
-			Deploy::makeCompletedAll();
-		else
-			Deploy::makeExpectedAll();
+			$this->makeCompletedAllPrevious();
+		else {
+			$this->makeError();
+		}
 	}
 	
 	/**
@@ -103,7 +106,12 @@ class Deploy extends DeployGii
 	
 	public function isPushReviewed()
 	{
-		return $this->status != self::STATUS_REVIEWED;
+		return $this->status == self::STATUS_REVIEWED;
+	}
+	
+	public function isPushError()
+	{
+		return $this->status == self::STATUS_ERROR;
 	}
 	
 	public function makeComplated() {
@@ -118,13 +126,16 @@ class Deploy extends DeployGii
 		return $this->changeStatus(self::STATUS_PROCESSING);
 	}
 	
+	public function makeError() {
+		return $this->changeStatus(self::STATUS_ERROR);
+	}
+	
 	public function makeExpected() {
 		return $this->changeStatus(self::STATUS_EXPECTED);
 	}
 	
 	public function changeStatus($status)
 	{
-		$this->scenario = parent::SCENARIO_SCHEDULER;
 		$this->status = $status;
 		return $this->save();
 	}
@@ -142,7 +153,14 @@ class Deploy extends DeployGii
 	public static function makeStatusAll($status)
 	{
 		return self::updateAll(['status'=>$status], ['and',
-//			['<=', 'id', $this->id],
+			['<>', 'status', self::STATUS_REVIEWED],
+		]);
+	}
+	
+	public function makeCompletedAllPrevious()
+	{
+		return self::updateAll(['status'=>self::STATUS_COMPLETED], ['and',
+			['<=', 'id', $this->id],
 			['<>', 'status', self::STATUS_REVIEWED],
 		]);
 	}
@@ -155,26 +173,17 @@ class Deploy extends DeployGii
 		return Yii::$app->params['basedir'];
 	}
 	
+	static function getBuildFile()
+	{
+		return Yii::$app->controller->module->buildFile;
+	}
+	
 	static function getConfigEnvServer()
 	{
 		if (!isset(Yii::$app->params['environment']['server']))
 			throw new InvalidParamException("В файлі з конфігурацією не вдалося знайти серверного оточення");			// Логуємо помилку та кидаємо виключення
 		
 		return Yii::$app->params['environment']['server'];
-	}
-	
-	public function populateMessage()
-	{
-		try {
-			$request = Json::decode($this->request_data, false);
-		} catch (\Exception $e) {
-			$this->message = $e->getMessage();
-			return;
-		}
-		
-		if (isset($request->push->changes[0]->commits) && is_array($request->push->changes[0]->commits))
-			foreach ($request->push->changes[0]->commits as $commit)
-				$this->message .= Html::a("{$commit->type} - {$commit->message}", $commit->links->html->href) . "<br>";
 	}
 	
 	public function getLogFileBuild()
@@ -218,7 +227,7 @@ class Deploy extends DeployGii
 	}
 	
 	/**
-	 * Формуємо відносний шлях до актуальної директорії з логами
+	 * Формуємо відносний шлях до актуальної дипекторії з логами
 	 *
 	 * @param string $datetime назва поточної директорії для логів
 	 * @return string повертається відносний шлях до директорії з поточними логами
@@ -230,5 +239,35 @@ class Deploy extends DeployGii
 		FileHelper::createDirectory($logDir);
 		
 		return $logDir;
+	}
+	
+	public static function getDeployForm()
+	{
+		$ipFilters = Yii::$app->controller->module->ipFilters;
+		
+		foreach ($ipFilters as $filter) {
+			
+			$validator = new IpValidator();
+			$validator->ipv6 = false;
+			$validator->setRanges($filter['ranges']);
+			
+			$ip = Yii::$app->request->userIP;
+			
+			if ($validator->validate($ip, $error)) {
+				return Yii::createObject($filter['class']);
+			}
+		}
+		
+		return null;
+	}
+	
+	public function responseOk()
+	{
+		return Json::encode(['status'=>'accept']);
+	}
+	
+	public function responseError()
+	{
+		return Json::encode(['status'=>'error']);
 	}
 }

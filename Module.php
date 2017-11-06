@@ -43,6 +43,16 @@ class Module extends \yii\base\Module
 			'roles' => ['deployBuild'],
 		],
 	];
+	public $ipFilters = [
+		'bitbucked' => [
+			'class' => 'nahard\deploy\models\forms\DeployBitbucketForm',
+			'ranges' => ['104.192.143.0/24', '34.198.203.127', '34.198.178.64', '34.198.32.85'],
+		],
+		'manual' => [
+			'class' => 'nahard\deploy\models\forms\DeployManualForm',
+			'ranges' => ['127.0.0.1'],
+		],
+	];
 	
 	/**
 	 * @inheritdoc

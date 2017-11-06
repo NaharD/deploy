@@ -22,8 +22,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
 		'rowOptions' => function ($model) {
-			if ($model->isPushReviewed())
+			if (!$model->isPushReviewed())
 				return ['class' => 'bg-yellow'];
+			elseif ($model->isPushError())
+				return ['class' => 'bg-red'];
 		},
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],

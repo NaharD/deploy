@@ -16,7 +16,6 @@ use Yii;
 class DeployGii extends \yii\db\ActiveRecord
 {
 
-	const SCENARIO_SCHEDULER = 'scheduler';
     /**
      * @inheritdoc
      */
@@ -35,7 +34,6 @@ class DeployGii extends \yii\db\ActiveRecord
             [['status'], 'integer'],
             [['status'], 'default', 'value' => Deploy::STATUS_EXPECTED],
             [['request_url'], 'string', 'max' => 255],
-            [['request_ip'], 'ip', 'ipv6' => false, 'ranges' => ['104.192.143.0/24', '34.198.203.127', '34.198.178.64', '34.198.32.85', '127.0.0.1'], 'except' => self::SCENARIO_SCHEDULER],
         ];
     }
 

@@ -15,12 +15,7 @@ class Module extends \yii\base\Module
 		[
 			'actions' => ['index'],
 			'allow' => true,
-			'roles' => ['deployUpdate'],
-		],
-		[
-			'actions' => ['update'],
-			'allow' => true,
-			'roles' => ['deployUpdate'],
+			'roles' => ['deployIndex'],
 		],
 		[
 			'actions' => ['create'],
@@ -36,11 +31,6 @@ class Module extends \yii\base\Module
 			'actions' => ['webhook'],
 			'allow' => true,
 			'roles' => ['deployWebhook'],
-		],
-		[
-			'actions' => ['build'],
-			'allow' => true,
-			'roles' => ['deployBuild'],
 		],
 	];
 	public $ipFilters = [

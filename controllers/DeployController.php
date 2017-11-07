@@ -4,6 +4,7 @@ namespace nahard\deploy\controllers;
 
 use nahard\deploy\models\forms\DeployBitbucketForm;
 use nahard\deploy\models\forms\DeployManualForm;
+use function Symfony\Component\Debug\Tests\testHeader;
 use Yii;
 use nahard\deploy\models\Deploy;
 use nahard\deploy\models\DeploySearch;
@@ -73,15 +74,10 @@ class DeployController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Deploy();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
+		$deployModel = (new DeployManualForm)->create();
+		$deployModel->runDeploy();
+		return $this->redirect(Yii::$app->request->referrer);
+//		echo $deployModel->responseOk();
     }
 
     /**
@@ -126,13 +122,6 @@ class DeployController extends Controller
 			return $this->goHome();
 		
 		$deployModel = $deployForm->create();
-		$deployModel->runDeploy();
-		echo $deployModel->responseOk();
-	}
-	
-	public function actionDeploy()
-	{
-		$deployModel = (new DeployManualForm)->create();
 		$deployModel->runDeploy();
 		echo $deployModel->responseOk();
 	}

@@ -89,7 +89,7 @@ class Deploy extends DeployGii
 		$count = self::find()->statusNotReviewed()->count();
 		
 		if ($count)
-			return '<span class="pull-right-container"><small class="label pull-right bg-green">' . $count . '</small></span></a>';
+			return '<span class="pull-right-container"><small class="label pull-right bg-green">' . $count . '</small></span>';
 	}
 	
 	/**

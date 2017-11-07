@@ -55,9 +55,9 @@ $this->params['breadcrumbs'][] = $this->title;
 						'request_ip',
 						'request_data:ntext',
 						'request_url:url',
-						'message:ntext',
-						'created_at',
-						'updated_at',
+						'message:html',
+						'created_at:datetime',
+						'updated_at:datetime',
 						'status',
 					],
 				]) ?>

@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'request_ip',
 //            'request_data:ntext',
 //            'request_url:url',
-            'message:html',
+            'message:raw',
             'created_at:datetime',
             // 'updated_at',
             // 'status',

@@ -38,7 +38,7 @@ class DeployBitbucketForm extends Model
 		
 		if (isset($request->push->changes[0]->commits) && is_array($request->push->changes[0]->commits))
 			foreach ($request->push->changes[0]->commits as $commit)
-				$message .= Html::a("{$commit->type} - {$commit->message}", $commit->links->html->href, ['target'=>'_blank']) . "<br>";
+				$message .= "{$commit->type} - " . Html::a($commit->message, $commit->links->html->href, ['target'=>'_blank']) . "<br>";
 		
 		return $message;
 	}

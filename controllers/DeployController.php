@@ -125,7 +125,7 @@ class DeployController extends Controller
 		$deployModel = $deployForm->create();
 		$deployModel->runDeploy();
 		
-		return $deployModel->responseOk($ip, $deployModel->getBy());
+		return Deploy::responseOk($ip, $deployForm->getBy());
 	}
 
 	public function beforeAction($action)

@@ -11,5 +11,5 @@ use yii\web\HttpException;
 
 abstract class DeployForm extends Model
 {
-	abstract function getBy() : string;
+	abstract function getBy();
 }

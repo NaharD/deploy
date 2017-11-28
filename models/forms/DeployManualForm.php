@@ -27,7 +27,7 @@ class DeployManualForm extends DeployForm
 		return 'Ручне розгортання';
 	}
 	
-	public function getBy(): string
+	public function getBy()
 	{
 		return 'manual';
 	}

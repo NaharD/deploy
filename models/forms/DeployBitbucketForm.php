@@ -43,7 +43,7 @@ class DeployBitbucketForm extends DeployForm
 		return $message;
 	}
 	
-	public function getBy(): string
+	public function getBy()
 	{
 		return 'bitbucket';
 	}

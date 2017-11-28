@@ -115,15 +115,17 @@ class DeployController extends Controller
 	public function actionWebhook()
 	{
 		// Перевірка чи це пост запит
+		$ip = Yii::$app->request->userIP;
 		
-		$deployForm = Deploy::getDeployForm();
+		$deployForm = Deploy::getDeployForm($ip);
 		
 		if (!$deployForm)
-			return $this->goHome();
+			return Deploy::responseError($ip);
 		
 		$deployModel = $deployForm->create();
 		$deployModel->runDeploy();
-		echo $deployModel->responseOk();
+		
+		return $deployModel->responseOk();
 	}
 
 	public function beforeAction($action)

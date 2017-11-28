@@ -239,7 +239,7 @@ class Deploy extends DeployGii
 		return $logDir;
 	}
 	
-	public static function getDeployForm()
+	public static function getDeployForm($ip)
 	{
 		$ipFilters = Yii::$app->controller->module->ipFilters;
 		
@@ -249,8 +249,6 @@ class Deploy extends DeployGii
 			$validator->ipv6 = false;
 			$validator->setRanges($filter['ranges']);
 			
-			$ip = Yii::$app->request->userIP;
-			
 			if ($validator->validate($ip, $error)) {
 				return Yii::createObject($filter['class']);
 			}
@@ -259,13 +257,13 @@ class Deploy extends DeployGii
 		return null;
 	}
 	
-	public function responseOk()
+	public static function responseOk()
 	{
-		return Json::encode(['status'=>'accept']);
+		echo Json::encode(['status'=>'accept']);
 	}
 	
-	public function responseError()
+	public static function responseError($ip)
 	{
-		return Json::encode(['status'=>'error']);
+		echo Json::encode(['status'=>'error', 'ip'=>$ip]);
 	}
 }

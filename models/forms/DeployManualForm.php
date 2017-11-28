@@ -6,7 +6,7 @@ use nahard\deploy\models\Deploy;
 use yii\base\Model;
 use Yii;
 
-class DeployManualForm extends Model
+class DeployManualForm extends DeployForm
 {
 	public function create()
 	{
@@ -25,5 +25,10 @@ class DeployManualForm extends Model
 	public function getParsedMessage()
 	{
 		return 'Ручне розгортання';
+	}
+	
+	public function getBy(): string
+	{
+		return 'manual';
 	}
 }

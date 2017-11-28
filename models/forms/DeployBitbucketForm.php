@@ -9,7 +9,7 @@ use yii\helpers\Json;
 use Yii;
 use yii\web\HttpException;
 
-class DeployBitbucketForm extends Model
+class DeployBitbucketForm extends DeployForm
 {
 	public function create()
 	{
@@ -41,5 +41,10 @@ class DeployBitbucketForm extends Model
 				$message .= "{$commit->type} - " . Html::a($commit->message, $commit->links->html->href, ['target'=>'_blank']) . "<br>";
 		
 		return $message;
+	}
+	
+	public function getBy(): string
+	{
+		return 'bitbucket';
 	}
 }

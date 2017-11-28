@@ -257,9 +257,9 @@ class Deploy extends DeployGii
 		return null;
 	}
 	
-	public static function responseOk()
+	public static function responseOk($ip, $by=null)
 	{
-		echo Json::encode(['status'=>'accept']);
+		echo Json::encode(['status'=>'accept', 'ip'=>$ip, 'by'=>$by]);
 	}
 	
 	public static function responseError($ip)

@@ -25,7 +25,6 @@ class DeployBitbucketForm extends DeployForm
 		throw new HttpException('Не вдалося зберегти до БД');
 	}
 	
-	
 	public function getParsedMessage($sourceString)
 	{
 		try {

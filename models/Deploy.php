@@ -47,8 +47,9 @@ class Deploy extends DeployGii
 		$datetime		= self::formatTimeForLogDir($this->created_by ?? 'now');
 		$logDir 		= self::buildLogDir($datetime);
 		$buildFile		= self::getBuildFile();
+		$phingProgram	= self::getPhingProgram();
 		
-		exec("cd '{$baseDir}'; phing -f {$buildFile} -logfile {$logDir}/build.log -D environment={$environment} -D datetime={$datetime} > {$logDir}/scheduler.log 2>{$logDir}/scheduler.error.log", $output, $return_var); // В $output нічого не буде, бо все потрапляє в логфайл, але помилку по синтаксису в build.xml відстідкувати можка
+		exec("cd '{$baseDir}'; {$phingProgram} -f {$buildFile} -logfile {$logDir}/build.log -D environment={$environment} -D datetime={$datetime} > {$logDir}/scheduler.log 2>{$logDir}/scheduler.error.log", $output, $return_var); // В $output нічого не буде, бо все потрапляє в логфайл, але помилку по синтаксису в build.xml відстідкувати можка
 		
 		if ($return_var === 0)																							// Якщо все файно, буде повернуто значення 0
 			$this->makeCompletedAllPrevious();
@@ -174,6 +175,11 @@ class Deploy extends DeployGii
 	static function getBuildFile()
 	{
 		return Yii::$app->controller->module->buildFile;
+	}
+	
+	static function getPhingProgram()
+	{
+		return Yii::$app->controller->module->phingProgram;
 	}
 	
 	static function getConfigEnvServer()

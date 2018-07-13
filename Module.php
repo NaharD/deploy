@@ -43,6 +43,7 @@ class Module extends \yii\base\Module
 			'ranges' => ['127.0.0.1'],
 		],
 	];
+	public $phingProgram = 'phing';
 	
 	/**
 	 * @inheritdoc

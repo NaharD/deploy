@@ -22,6 +22,11 @@ class m170914_101049_create_deploy_table extends Migration
 			'updated_at' => $this->integer(),
 			'status' => $this->integer()->defaultValue(0),
 		]);
+		$this->createIndex(
+			'idx-deploy-status',
+			'deploy',
+			'status'
+		);
 	}
 	
 	/**
@@ -29,6 +34,10 @@ class m170914_101049_create_deploy_table extends Migration
 	 */
 	public function down()
 	{
+		$this->dropIndex(
+			'idx-deploy-status',
+			'deploy'
+		);
 		$this->dropTable('deploy');
 	}
 }

@@ -18,13 +18,6 @@ class Deploy extends DeployGii
 	const STATUS_REVIEWED 	= 2;
 	const STATUS_ERROR 		= 3;
 	
-	const FILE_NAME_BUILD 				= 'build';
-	const FILE_NAME_GIT 				= 'git';
-	const FILE_NAME_COMPOSER		 	= 'composer';
-	const FILE_NAME_MIGRATE				= 'migrate';
-	const FILE_NAME_SCHEDULER_ERROR 	= 'scheduler.error';
-	const FILE_NAME_SCHEDULER 			= 'scheduler';
-	
 	public function behaviors()
 	{
 		return [
@@ -39,7 +32,7 @@ class Deploy extends DeployGii
 	{
 		if (self::isDeployProcessing())
 			return;
-		
+
 		$this->makeProcessing();
 		
 		$environment	= self::getConfigEnvServer();
@@ -176,12 +169,12 @@ class Deploy extends DeployGii
 	{
 		return Yii::$app->controller->module->buildFile;
 	}
-	
+
 	static function getPhingProgram()
 	{
 		return Yii::$app->controller->module->phingProgram;
 	}
-	
+
 	static function getConfigEnvServer()
 	{
 		if (!isset(Yii::$app->params['environment']['server']))
@@ -190,40 +183,10 @@ class Deploy extends DeployGii
 		return Yii::$app->params['environment']['server'];
 	}
 	
-	public function getLogFileBuild()
-	{
-		return $this->getLogFile(self::FILE_NAME_BUILD);
-	}
-	
-	public function getLogFileComposer()
-	{
-		return $this->getLogFile(self::FILE_NAME_COMPOSER);
-	}
-	
-	public function getLogFileGit()
-	{
-		return $this->getLogFile(self::FILE_NAME_GIT);
-	}
-	
-	public function getLogFileMigrate()
-	{
-		return $this->getLogFile(self::FILE_NAME_MIGRATE);
-	}
-	
-	public function getLogFileSchedulerError()
-	{
-		return $this->getLogFile(self::FILE_NAME_SCHEDULER_ERROR);
-	}
-	
-	public function getLogFileScheduler()
-	{
-		return $this->getLogFile(self::FILE_NAME_SCHEDULER);
-	}
-	
 	public function getLogFile($fileName)
 	{
 		$datetime		= Yii::$app->formatter->asDatetime($this->created_at, 'dd.MM.yyyy-HH:mm:ss');
-		$logDir 		= self::buildLogDir($datetime) . DIRECTORY_SEPARATOR . $fileName . '.log';
+		$logDir 		= self::buildLogDir($datetime) . DIRECTORY_SEPARATOR . $fileName;
 		
 		if (is_file($logDir))
 			return '<pre>' . file_get_contents($logDir) . '</pre>';

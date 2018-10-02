@@ -76,7 +76,7 @@ class DeployController extends Controller
     {
 		$deployModel = (new DeployManualForm)->create();
 		$deployModel->runDeploy();
-		return $this->redirect(Yii::$app->request->referrer);
+		return $this->redirect('index');
 //		echo $deployModel->responseOk();
     }
 

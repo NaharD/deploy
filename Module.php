@@ -36,7 +36,7 @@ class Module extends \yii\base\Module
 	public $ipFilters = [
 		'bitbucked' => [
 			'class' => 'nahard\deploy\models\forms\DeployBitbucketForm',
-			'ranges' => ['104.192.136.0/21', '34.198.203.127', '34.198.178.64', '34.198.32.85'],
+			'ranges' => ['13.52.5.0/25', '18.234.32.128/25', '18.205.93.0/25'],
 		],
 		'manual' => [
 			'class' => 'nahard\deploy\models\forms\DeployManualForm',

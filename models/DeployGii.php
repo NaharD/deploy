@@ -44,9 +44,9 @@ class DeployGii extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'request_ip' => 'Request Ip',
-            'request_data' => 'Request Data',
-            'request_url' => 'Request Url',
+            'request_ip' => 'Ip',
+            'request_data' => 'Data',
+            'request_url' => 'Url',
             'status' => 'Status',
         ];
     }

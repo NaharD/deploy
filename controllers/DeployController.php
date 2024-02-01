@@ -4,7 +4,6 @@ namespace nahard\deploy\controllers;
 
 use nahard\deploy\models\forms\DeployBitbucketForm;
 use nahard\deploy\models\forms\DeployManualForm;
-use function Symfony\Component\Debug\Tests\testHeader;
 use Yii;
 use nahard\deploy\models\Deploy;
 use nahard\deploy\models\DeploySearch;
@@ -13,9 +12,6 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
-/**
- * DeployController implements the CRUD actions for Deploy model.
- */
 class DeployController extends Controller
 {
     /**
@@ -119,11 +115,20 @@ class DeployController extends Controller
 		
 		$deployForm = Deploy::getDeployForm($ip);
 		
-		if (!$deployForm)
-			return Deploy::responseError($ip);
-		
+        if (!$deployForm) {
+            if ($errorCallback = Yii::$app->controller->module->errorCallback) {
+                $errorCallback($ip);
+            }
+
+            return Deploy::responseError($ip);
+        }
+
 		$deployModel = $deployForm->create();
 		$deployModel->runDeploy();
+
+        if ($successCallback = Yii::$app->controller->module->successCallback) {
+            $successCallback($ip, $deployForm->getBy());
+        }
 		
 		return Deploy::responseOk($ip, $deployForm->getBy());
 	}

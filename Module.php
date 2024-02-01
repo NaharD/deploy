@@ -45,7 +45,10 @@ class Module extends \yii\base\Module
 	];
 	public $phingProgram = 'phing';
 	public $viewTabs = [];
-	
+	public $userCallback;
+	public $errorCallback;
+	public $successCallback;
+
 	/**
 	 * @inheritdoc
 	 */

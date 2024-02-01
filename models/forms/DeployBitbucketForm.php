@@ -35,10 +35,12 @@ class DeployBitbucketForm extends DeployForm
 		
 		$message = '';
 		
-		if (isset($request->push->changes[0]->commits) && is_array($request->push->changes[0]->commits))
-			foreach ($request->push->changes[0]->commits as $commit)
-				$message .= "{$commit->type} " . preg_replace('/\s.*/', '', $commit->author->raw) .  " - " . Html::a($commit->message, $commit->links->html->href, ['target'=>'_blank']) . "<br>";
-		
+		if (isset($request->push->changes[0]->commits) && is_array($request->push->changes[0]->commits)) {
+            foreach ($request->push->changes[0]->commits as $commit) {
+                $message .= "{$commit->type} " . $commit->author->user->nickname .  " - " . Html::a($commit->message, $commit->links->html->href, ['target'=>'_blank']) . "<br>";
+            }
+        }
+
 		return $message;
 	}
 	

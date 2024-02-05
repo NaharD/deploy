@@ -213,14 +213,19 @@ class Deploy extends DeployGii
 		$ipFilters = Yii::$app->controller->module->ipFilters;
 		
 		foreach ($ipFilters as $filter) {
-			
-			$validator = new IpValidator();
-			$validator->ipv6 = false;
-			$validator->setRanges($filter['ranges']);
-			
-			if ($validator->validate($ip, $error)) {
-				return Yii::createObject($filter['class']);
-			}
+            $validator = new IpValidator();
+
+            if (is_callable($filter['ranges'])) {
+                $ips = call_user_func($filter['ranges']);
+            } elseif (is_array($filter['ranges'])) {
+                $ips = $filter['ranges'];
+            }
+
+            $validator->setRanges($ips);
+
+            if ($validator->validate($ip, $error)) {
+                return Yii::createObject($filter['class']);
+            }
 		}
 		
 		return null;
